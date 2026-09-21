@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الصيدلية الفرعية | استفسارات الأدوية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0F5257;
+    --teal-dark:#0A3B3F;
+    --sage:#6E9B87;
+    --paper:#F7F4EC;
+    --paper-2:#EFEADD;
+    --ink:#20302C;
+    --ink-soft:#5A6B65;
+    --plum:#7A3B69;
+    --amber:#C2792E;
+    --line:#DBD4C3;
+    --white:#FFFEFB;
+    --danger:#B3462C;
+    --radius:14px;
+    --shadow: 0 10px 30px -18px rgba(15,82,87,.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:28px 20px 60px;}
+
+  /* ===== Header ===== */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:28px;
+  }
+  .brand{display:flex;flex-direction:column;gap:2px;}
+  .brand .mark{
+    font-family:'Almarai',sans-serif;font-weight:800;font-size:22px;color:var(--teal-dark);
+  }
+  .brand .sub{font-size:13px;color:var(--ink-soft);}
+  .admin-link{
+    font-size:13px;color:var(--ink-soft);text-decoration:none;
+    border:1px solid var(--line);padding:7px 14px;border-radius:999px;
+    background:var(--white);cursor:pointer;transition:border-color .15s ease,color .15s ease;
+  }
+  .admin-link:hover{border-color:var(--teal);color:var(--teal-dark);}
+
+  /* ===== Hero / directory board ===== */
+  .hero-title{
+    font-family:'Almarai',sans-serif;font-weight:800;font-size:26px;
+    color:var(--teal-dark);margin:0 0 6px;
+  }
+  .hero-desc{color:var(--ink-soft);margin:0 0 22px;font-size:15px;max-width:56ch;}
+
+  .board{
+    display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;
+  }
+  @media (max-width:520px){ .board{grid-template-columns:1fr;} }
+
+  .plate{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;text-align:right;cursor:pointer;font-family:'Tajawal',sans-serif;
+    font-size:14.5px;font-weight:500;color:var(--ink);
+    border-inline-start:4px solid var(--sage);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .plate:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+  .plate.selected{
+    background:var(--teal);color:var(--white);border-color:var(--teal);
+    border-inline-start-color:var(--amber);box-shadow:var(--shadow);
+  }
+  .plate .hint{display:block;font-size:12px;opacity:.75;margin-top:2px;}
+
+  /* ===== Form ===== */
+  .panel{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 22px 20px;margin-top:22px;box-shadow:var(--shadow);
+    display:none;
+  }
+  .panel.open{display:block;}
+  .panel h2{font-family:'Almarai',sans-serif;font-size:17px;margin:0 0 4px;color:var(--teal-dark);}
+  .selected-clinic{color:var(--ink-soft);font-size:13.5px;margin-bottom:16px;}
+  .selected-clinic b{color:var(--teal);}
+
+  label{display:block;font-size:13.5px;color:var(--ink-soft);margin:14px 0 6px;}
+  input[type=text], input[type=tel], textarea{
+    width:100%;border:1px solid var(--line);border-radius:9px;padding:11px 12px;
+    font-family:'Tajawal',sans-serif;font-size:14.5px;color:var(--ink);background:var(--paper);
+    resize:vertical;
+  }
+  textarea{min-height:88px;}
+  input:focus, textarea:focus, button:focus-visible{
+    outline:2px solid var(--teal);outline-offset:1px;
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--teal);color:var(--white);border:none;border-radius:9px;
+    padding:12px 20px;font-family:'Tajawal',sans-serif;font-weight:700;font-size:14.5px;
+    cursor:pointer;transition:background .15s ease;
+  }
+  .btn:hover{background:var(--teal-dark);}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .btn.secondary{background:var(--white);color:var(--teal-dark);border:1px solid var(--line);}
+  .btn.secondary:hover{border-color:var(--teal);}
+  .btn.danger{background:var(--danger);}
+  .btn.danger:hover{background:#8f3720;}
+  .btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+  .msg{
+    margin-top:12px;padding:11px 13px;border-radius:9px;font-size:13.5px;display:none;
+  }
+  .msg.ok{background:#E7F0EA;color:#255C3F;display:block;}
+  .msg.err{background:#F6E4DD;color:var(--danger);display:block;}
+
+  /* ===== Tracking ===== */
+  .track{margin-top:34px;}
+  .track h2{font-family:'Almarai',sans-serif;font-size:17px;color:var(--teal-dark);margin:0 0 12px;}
+  .ticket{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;
+    padding:13px 15px;margin-bottom:10px;font-size:13.5px;
+  }
+  .ticket .row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .ticket .clinic{font-weight:700;color:var(--teal-dark);}
+  .ticket .status{
+    font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .status.pending{background:#F3E7D2;color:var(--amber);}
+  .status.done{background:#E7F0EA;color:#255C3F;}
+  .ticket .q{color:var(--ink-soft);margin-top:6px;}
+  .ticket .reply{
+    margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--ink);
+  }
+  .empty-hint{color:var(--ink-soft);font-size:13.5px;}
+
+  /* ===== Footer / credits ===== */
+  footer{
+    margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--ink-soft);text-align:center;
+  }
+  .credit-names{font-weight:700;margin-bottom:4px;}
+  .credit-names .c1{color:var(--plum);}
+  .credit-names .sep{color:var(--line);margin:0 6px;}
+  .credit-names .c2{color:var(--plum);}
+  .credit-super{
+    display:inline-block;margin-top:2px;color:var(--amber);font-weight:700;
+    background:#FBEEDD;padding:4px 12px;border-radius:999px;font-size:12px;
+  }
+
+  /* ===== Admin ===== */
+  .overlay{
+    position:fixed;inset:0;background:rgba(15,20,19,.55);display:none;
+    align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .admin-card{
+    background:var(--white);border-radius:var(--radius);max-width:600px;width:100%;
+    padding:26px 24px;box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
+  }
+  .admin-card h2{font-family:'Almarai',sans-serif;color:var(--teal-dark);margin-top:0;}
+  .close-x{
+    float:left;background:none;border:none;font-size:20px;color:var(--ink-soft);cursor:pointer;
+  }
+  .pin-boxes{display:flex;gap:8px;justify-content:center;margin:18px 0;}
+  .pin-boxes input{
+    width:42px;height:52px;text-align:center;font-size:22px;padding:0;
+  }
+  .queue-item{
+    border:1px solid var(--line);border-radius:10px;padding:13px 14px;margin-bottom:12px;
+  }
+  .queue-item .meta{font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
+  .queue-item .q{margin-bottom:10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  .chip{
+    font-size:12px;border:1px solid var(--line);background:var(--paper);
+    border-radius:999px;padding:5px 11px;cursor:pointer;color:var(--ink);
+  }
+  .chip:hover{border-color:var(--teal);color:var(--teal-dark);}
+  .queue-item textarea{min-height:60px;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{
+    padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--white);
+    font-size:13px;cursor:pointer;color:var(--ink-soft);
+  }
+  .tab.active{background:var(--teal);color:var(--white);border-color:var(--teal);}
+  .settings-box{border-top:1px dashed var(--line);margin-top:22px;padding-top:16px;}
+  .settings-box summary{cursor:pointer;font-size:13.5px;color:var(--ink-soft);}
+  .small-note{font-size:12px;color:var(--ink-soft);margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">الصيدلية الفرعية</span>
+      <span class="sub">استفسارات توفّر الأدوية حسب العيادة</span>
+    </div>
+    <button class="admin-link" onclick="openAdmin()">لوحة الصيدلاني</button>
+  </header>
+
+  <h1 class="hero-title">اختر العيادة التي صُرف منها العلاج</h1>
+  <p class="hero-desc">
+    استخدم هذه الصفحة للاستفسار عن مدى توفر علاج معيّن في الصيدلية. اختر العيادة أولاً،
+    ثم اكتب اسم الدواء أو استفسارك وسنقوم بالرد عليك في أقرب وقت.
+  </p>
+
+  <div class="board" id="board"></div>
+
+  <div class="panel" id="formPanel">
+    <h2>تفاصيل الاستفسار</h2>
+    <p class="selected-clinic">العيادة المختارة: <b id="selectedClinicLabel">—</b></p>
+
+    <label for="patientName">الاسم (اختياري)</label>
+    <input type="text" id="patientName" placeholder="اسمك">
+
+    <label for="phone">رقم الهاتف للتواصل</label>
+    <input type="tel" id="phone" placeholder="07xxxxxxxx">
+
+    <label for="message">الاستفسار</label>
+    <textarea id="message" placeholder="مثال: هل يتوفر لديكم دواء ... ؟"></textarea>
+
+    <div class="btn-row">
+      <button class="btn" id="submitBtn" onclick="submitInquiry()">إرسال الاستفسار</button>
+      <button class="btn secondary" onclick="closeForm()">إلغاء</button>
+    </div>
+    <div class="msg" id="formMsg"></div>
+  </div>
+
+  <div class="track">
+    <h2>متابعة استفساراتي</h2>
+    <div id="ticketsList"><p class="empty-hint">لا توجد استفسارات سابقة على هذا الجهاز بعد.</p></div>
+  </div>
+
+  <footer>
+    <div class="credit-names">
+      <span class="c1">إعداد وتصميم د. عز الدين الخرابشة</span><span class="sep">•</span><span class="c2">د. سوسن الزيادات</span>
+    </div>
+    <span class="credit-super">تحت إشراف عطوفة الدكتور مهند الحديدي</span>
+  </footer>
+</div>
+
+<!-- ===== Admin overlay ===== -->
+<div class="overlay" id="adminOverlay">
+  <div class="admin-card">
+    <button class="close-x" onclick="closeAdmin()">×</button>
+
+    <div id="pinScreen">
+      <h2>دخول لوحة الصيدلاني</h2>
+      <p style="color:var(--ink-soft);font-size:13.5px;">أدخل الرمز السري لعرض الاستفسارات والرد عليها.</p>
+      <div class="pin-boxes">
+        <input type="text" inputmode="numeric" maxlength="1" class="pinDigit">
+        <input type="text" inputmode="numeric" maxlength="1" class="pinDigit">
+        <input type="text" inputmode="numeric" maxlength="1" class="pinDigit">
+        <input type="text" inputmode="numeric" maxlength="1" class="pinDigit">
+      </div>
+      <div class="msg" id="pinMsg"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="checkPin()">دخول</button>
+      </div>
+    </div>
+
+    <div id="adminScreen" style="display:none;">
+      <h2>استفسارات المرضى</h2>
+      <div class="tabs">
+        <button class="tab active" data-f="pending" onclick="setFilter('pending')">بانتظار الرد</button>
+        <button class="tab" data-f="done" onclick="setFilter('done')">تم الرد عليها</button>
+        <button class="tab" data-f="all" onclick="setFilter('all')">الكل</button>
+      </div>
+      <div id="queueList"></div>
+
+      <details class="settings-box">
+        <summary>تغيير الرمز السري</summary>
+        <label for="oldPin">الرمز الحالي</label>
+        <input type="text" id="oldPin" inputmode="numeric">
+        <label for="newPin">الرمز الجديد</label>
+        <input type="text" id="newPin" inputmode="numeric">
+        <div class="btn-row">
+          <button class="btn secondary" onclick="changePin()">حفظ الرمز الجديد</button>
+        </div>
+        <div class="msg" id="pinChangeMsg"></div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====================== إعداد الربط مع Google Sheets ======================
+   ضع هنا رابط تطبيق الويب الذي حصلت عليه بعد نشر ملف Code.gs (ينتهي بـ /exec)
+============================================================================ */
+const API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+const CLINICS = [
+  "الجلدية", "النسائية", "أنف وأذن وحنجرة", "الأطفال", "العظام",
+  "هضمي أطفال", "غدد أطفال", "النفسية", "جراحة وجه وفكين", "صدرية أطفال",
+  "الأسنان", "اللثة", "العيون (استفسار عن العدسات)", "جراحة أطفال", "عمليات نهارية"
+];
+
+const QUICK_REPLIES = [
+  "الدواء متوفر لديكم، يمكنكم مراجعة الصيدلية لاستلامه.",
+  "الدواء غير متوفر حالياً، سيتم التواصل معكم فور توفره.",
+  "يتوفر بديل للدواء المطلوب، يرجى الاتصال بالصيدلية للاستفسار.",
+  "يرجى إحضار الوصفة الطبية عند المراجعة.",
+  "تم استلام استفساركم وسيتم الرد خلال ساعات العمل الرسمية."
+];
+
+let selectedClinic = null;
+let currentPin = null;
+let queueRows = [];
+let activeFilter = "pending";
+
+/* ---------- بناء لوحة العيادات ---------- */
+const board = document.getElementById("board");
+CLINICS.forEach(name => {
+  const div = document.createElement("div");
+  div.className = "plate";
+  div.textContent = name;
+  div.onclick = () => selectClinic(name, div);
+  board.appendChild(div);
+});
+
+function selectClinic(name, el) {
+  selectedClinic = name;
+  document.querySelectorAll(".plate").forEach(p => p.classList.remove("selected"));
+  el.classList.add("selected");
+  document.getElementById("selectedClinicLabel").textContent = name;
+  document.getElementById("formPanel").classList.add("open");
+  document.getElementById("formPanel").scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+function closeForm() {
+  document.getElementById("formPanel").classList.remove("open");
+  document.querySelectorAll(".plate").forEach(p => p.classList.remove("selected"));
+  selectedClinic = null;
+}
+
+/* ---------- إرسال استفسار ---------- */
+async function submitInquiry() {
+  const message = document.getElementById("message").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const patientName = document.getElementById("patientName").value.trim();
+  const msgBox = document.getElementById("formMsg");
+  msgBox.className = "msg";
+
+  if (!selectedClinic) { showMsg(msgBox, "يرجى اختيار العيادة أولاً.", false); return; }
+  if (!message) { showMsg(msgBox, "يرجى كتابة الاستفسار.", false); return; }
+  if (!phone) { showMsg(msgBox, "يرجى إدخال رقم هاتف للتواصل.", false); return; }
+  if (isPlaceholderUrl()) { showMsg(msgBox, "لم يتم ربط الصفحة بجدول البيانات بعد.", false); return; }
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true; btn.textContent = "جارٍ الإرسال...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "submit", clinic: selectedClinic, patientName, phone, message })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      saveLocalTicket(data.id, selectedClinic, message);
+      showMsg(msgBox, "تم إرسال استفسارك بنجاح. رقم المتابعة: " + data.id, true);
+      document.getElementById("message").value = "";
+      renderTickets();
+    } else {
+      showMsg(msgBox, "تعذّر إرسال الاستفسار، حاول مرة أخرى.", false);
+    }
+  } catch (err) {
+    showMsg(msgBox, "تعذّر الاتصال بالخادم، تحقق من الاتصال بالإنترنت.", false);
+  } finally {
+    btn.disabled = false; btn.textContent = "إرسال الاستفسار";
+  }
+}
+
+function showMsg(el, text, ok) {
+  el.textContent = text;
+  el.className = "msg " + (ok ? "ok" : "err");
+}
+
+function isPlaceholderUrl(){
+  return !API_URL || API_URL.indexOf("PASTE_YOUR") === 0;
+}
+
+/* ---------- تتبع الاستفسارات (محلي على هذا الجهاز) ---------- */
+function saveLocalTicket(id, clinic, message) {
+  const list = JSON.parse(localStorage.getItem("myTickets") || "[]");
+  list.unshift({ id, clinic, message });
+  localStorage.setItem("myTickets", JSON.stringify(list.slice(0, 20)));
+}
+
+async function renderTickets() {
+  const list = JSON.parse(localStorage.getItem("myTickets") || "[]");
+  const box = document.getElementById("ticketsList");
+  if (!list.length) {
+    box.innerHTML = '<p class="empty-hint">لا توجد استفسارات سابقة على هذا الجهاز بعد.</p>';
+    return;
+  }
+  box.innerHTML = "";
+  for (const t of list) {
+    const card = document.createElement("div");
+    card.className = "ticket";
+    card.innerHTML = `
+      <div class="row">
+        <span class="clinic">${t.clinic}</span>
+        <span class="status pending" id="st-${t.id}">جارٍ التحقق...</span>
+      </div>
+      <div class="q">${escapeHtml(t.message)}</div>
+      <div class="reply" id="rp-${t.id}" style="display:none;"></div>
+    `;
+    box.appendChild(card);
+    refreshTicketStatus(t.id);
+  }
+}
+
+async function refreshTicketStatus(id) {
+  if (isPlaceholderUrl()) return;
+  try {
+    const res = await fetch(API_URL + "?action=status&id=" + encodeURIComponent(id));
+    const data = await res.json();
+    const stEl = document.getElementById("st-" + id);
+    const rpEl = document.getElementById("rp-" + id);
+    if (!data.ok || !stEl) return;
+    if (data.status === "تم الرد") {
+      stEl.textContent = "تم الرد";
+      stEl.className = "status done";
+      if (rpEl) { rpEl.textContent = "الرد: " + data.reply; rpEl.style.display = "block"; }
+    } else {
+      stEl.textContent = "قيد الانتظار";
+      stEl.className = "status pending";
+    }
+  } catch (e) { /* تجاهل أخطاء الشبكة أثناء التحديث الصامت */ }
+}
+
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* ---------- لوحة الصيدلاني ---------- */
+function openAdmin() {
+  document.getElementById("adminOverlay").classList.add("open");
+  document.getElementById("pinScreen").style.display = "block";
+  document.getElementById("adminScreen").style.display = "none";
+  document.querySelectorAll(".pinDigit").forEach(i => i.value = "");
+  document.getElementById("pinMsg").className = "msg";
+  wirePinInputs();
+  setTimeout(() => document.querySelector(".pinDigit").focus(), 50);
+}
+function closeAdmin() {
+  document.getElementById("adminOverlay").classList.remove("open");
+}
+
+function wirePinInputs() {
+  const inputs = document.querySelectorAll(".pinDigit");
+  inputs.forEach((inp, idx) => {
+    inp.oninput = () => {
+      inp.value = inp.value.replace(/[^0-9]/g, "").slice(0, 1);
+      if (inp.value && inputs[idx + 1]) inputs[idx + 1].focus();
+    };
+    inp.onkeydown = (e) => {
+      if (e.key === "Backspace" && !inp.value && inputs[idx - 1]) inputs[idx - 1].focus();
+      if (e.key === "Enter") checkPin();
+    };
+  });
+}
+
+async function checkPin() {
+  const pin = Array.from(document.querySelectorAll(".pinDigit")).map(i => i.value).join("");
+  const msgBox = document.getElementById("pinMsg");
+  if (pin.length < 4) { showMsg(msgBox, "أدخل الرمز السري كاملاً.", false); return; }
+  if (isPlaceholderUrl()) { showMsg(msgBox, "لم يتم ربط الصفحة بجدول البيانات بعد.", false); return; }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST", body: JSON.stringify({ action: "checkPin", pin })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      currentPin = pin;
+      document.getElementById("pinScreen").style.display = "none";
+      document.getElementById("adminScreen").style.display = "block";
+      loadQueue();
+    } else {
+      showMsg(msgBox, "الرمز السري غير صحيح.", false);
+    }
+  } catch (e) {
+    showMsg(msgBox, "تعذّر الاتصال بالخادم.", false);
+  }
+}
+
+async function loadQueue() {
+  const box = document.getElementById("queueList");
+  box.innerHTML = '<p class="empty-hint">جارٍ التحميل...</p>';
+  try {
+    const res = await fetch(API_URL + "?action=list&pin=" + encodeURIComponent(currentPin));
+    const data = await res.json();
+    if (!data.ok) { box.innerHTML = '<p class="empty-hint">تعذّر تحميل الاستفسارات.</p>'; return; }
+    queueRows = data.rows;
+    renderQueue();
+  } catch (e) {
+    box.innerHTML = '<p class="empty-hint">تعذّر الاتصال بالخادم.</p>';
+  }
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.f === f));
+  renderQueue();
+}
+
+function renderQueue() {
+  const box = document.getElementById("queueList");
+  let rows = queueRows;
+  if (activeFilter === "pending") rows = rows.filter(r => r.status !== "تم الرد");
+  if (activeFilter === "done") rows = rows.filter(r => r.status === "تم الرد");
+
+  if (!rows.length) {
+    box.innerHTML = '<p class="empty-hint">لا توجد استفسارات في هذا القسم.</p>';
+    return;
+  }
+  box.innerHTML = "";
+  rows.forEach(r => {
+    const item = document.createElement("div");
+    item.className = "queue-item";
+    const already = r.status === "تم الرد";
+    item.innerHTML = `
+      <div class="meta">${r.clinic} • ${r.patientName || "بدون اسم"} • ${r.phone || "—"} • ${r.id}</div>
+      <div class="q">${escapeHtml(r.message)}</div>
+      ${already ? `<div class="small-note">تم الرد مسبقاً: ${escapeHtml(r.reply)}</div>` : `
+        <div class="chips">${QUICK_REPLIES.map(q => `<span class="chip" onclick="fillReply('${r.id}', this)">${q}</span>`).join("")}</div>
+        <textarea id="reply-${r.id}" placeholder="اكتب الرد هنا..."></textarea>
+        <div class="btn-row">
+          <button class="btn" onclick="sendReply('${r.id}')">إرسال الرد</button>
+        </div>
+      `}
+    `;
+    box.appendChild(item);
+  });
+}
+
+function fillReply(id, chipEl) {
+  const ta = document.getElementById("reply-" + id);
+  if (ta) ta.value = chipEl.textContent;
+}
+
+async function sendReply(id) {
+  const ta = document.getElementById("reply-" + id);
+  const reply = ta.value.trim();
+  if (!reply) return;
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST", body: JSON.stringify({ action: "reply", id, reply, pin: currentPin })
+    });
+    const data = await res.json();
+    if (data.ok) { loadQueue(); } else { alert("تعذّر إرسال الرد."); }
+  } catch (e) { alert("تعذّر الاتصال بالخادم."); }
+}
+
+async function changePin() {
+  const oldPin = document.getElementById("oldPin").value.trim();
+  const newPin = document.getElementById("newPin").value.trim();
+  const msgBox = document.getElementById("pinChangeMsg");
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST", body: JSON.stringify({ action: "changePin", oldPin, newPin })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      currentPin = newPin;
+      showMsg(msgBox, "تم تغيير الرمز السري بنجاح.", true);
+      document.getElementById("oldPin").value = "";
+      document.getElementById("newPin").value = "";
+    } else {
+      showMsg(msgBox, "الرمز الحالي غير صحيح أو الرمز الجديد قصير جداً.", false);
+    }
+  } catch (e) {
+    showMsg(msgBox, "تعذّر الاتصال بالخادم.", false);
+  }
+}
+
+renderTickets();
+</script>
+</body>
+</html>
