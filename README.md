@@ -1,2 +1,0 @@
-# Pharmacy
-Drug available 
